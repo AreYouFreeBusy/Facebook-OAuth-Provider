@@ -8,7 +8,7 @@ The difference between this library and the Facebook OAuth provider shipped with
 
 This library was originally developed for and is in use at https://freebusy.io
 
-This library is available as a NuGet package at https://www.nuget.org/packages/Owin.Security.Providers.Slack/
+This library is available as a NuGet package at https://www.nuget.org/packages/Owin.Security.Providers.Facebook
 
 How to Use
 ======================
