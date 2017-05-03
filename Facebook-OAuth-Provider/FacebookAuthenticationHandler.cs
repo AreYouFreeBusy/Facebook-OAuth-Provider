@@ -97,11 +97,11 @@ namespace Owin.Security.Providers.Facebook
                 HttpResponseMessage tokenResponse = 
                     await _httpClient.GetAsync(TokenEndpoint + "?" + tokenRequest, Request.CallCancelled);
                 tokenResponse.EnsureSuccessStatusCode();
-                string text = await tokenResponse.Content.ReadAsStringAsync();
-                IFormCollection form = WebHelpers.ParseForm(text);
+                string content = await tokenResponse.Content.ReadAsStringAsync();
+                JObject token = JObject.Parse(content);
 
-                string accessToken = form["access_token"];
-                string expires = form["expires"];
+                string accessToken = token["access_token"].Value<string>();
+                string expires = token["expires_in"].Value<string>();
 
                 // get user info
                 string graphAddress = UserInfoEndpoint + "?access_token=" + Uri.EscapeDataString(accessToken);
@@ -112,8 +112,8 @@ namespace Owin.Security.Providers.Facebook
 
                 HttpResponseMessage graphResponse = await _httpClient.GetAsync(graphAddress, Request.CallCancelled);
                 graphResponse.EnsureSuccessStatusCode();
-                text = await graphResponse.Content.ReadAsStringAsync();
-                JObject user = JObject.Parse(text);
+                content = await graphResponse.Content.ReadAsStringAsync();
+                JObject user = JObject.Parse(content);
 
                 // get permissions
                 string permissionsAddress = PermissionsEndpoint + "?access_token=" + Uri.EscapeDataString(accessToken);
@@ -123,8 +123,8 @@ namespace Owin.Security.Providers.Facebook
 
                 HttpResponseMessage permissionsResponse = await _httpClient.GetAsync(permissionsAddress, Request.CallCancelled);
                 permissionsResponse.EnsureSuccessStatusCode();
-                text = await permissionsResponse.Content.ReadAsStringAsync();
-                JObject permissions = JObject.Parse(text);
+                content = await permissionsResponse.Content.ReadAsStringAsync();
+                JObject permissions = JObject.Parse(content);
 
                 // parse reponses
                 var context = new FacebookAuthenticatedContext(Context, user, permissions, accessToken, expires);
